@@ -172,21 +172,23 @@ bool Dictionary::assignUserDictionaryCosts(
   property.set_charset(from.c_str());
 
   if (!matrix.openText(matrix_file.c_str()) &&
-      !matrix.open(matrix_bin_file.c_str())) {
+      !matrix.open(
+          matrix_bin_file.c_str(),
+          param.get<std::string>("white-space-penalty-infos").c_str())) {
     matrix.set_left_size(1);
     matrix.set_right_size(1);
   }
 
   cid.open(left_id_file.c_str(),
            right_id_file.c_str(), &config_iconv);
-  CHECK_DIE(cid.left_size()  == matrix.left_size() &&
-            cid.right_size() == matrix.right_size())
+  CHECK_DIE(cid.left_size()  == matrix.right_size() &&
+            cid.right_size() == matrix.left_size())
       << "Context ID files("
       << left_id_file
       << " or "
       << right_id_file << " may be broken: "
-      << cid.left_size() << " " << matrix.left_size() << " "
-      << cid.right_size() << " " << matrix.right_size();
+      << cid.left_size() << " " << matrix.right_size() << " "
+      << cid.right_size() << " " << matrix.left_size();
 
   std::ofstream ofs(output);
   CHECK_DIE(ofs) << "permission denied: " << output;
@@ -282,7 +284,9 @@ bool Dictionary::compile(const Param &param,
   }
 
   if (!matrix.openText(matrix_file.c_str()) &&
-      !matrix.open(matrix_bin_file.c_str())) {
+      !matrix.open(
+          matrix_bin_file.c_str(),
+          param.get<std::string>("white-space-penalty-infos").c_str())) {
     matrix.set_left_size(1);
     matrix.set_right_size(1);
   }
@@ -352,8 +356,8 @@ bool Dictionary::compile(const Param &param,
           cid.reset(new ContextID);
           cid->open(left_id_file.c_str(),
                     right_id_file.c_str(), &config_iconv);
-          CHECK_DIE(cid->left_size()  == matrix.left_size() &&
-                    cid->right_size() == matrix.right_size())
+          CHECK_DIE(cid->left_size()  == matrix.right_size() &&
+                    cid->right_size() == matrix.left_size())
               << "Context ID files("
               << left_id_file
               << " or "

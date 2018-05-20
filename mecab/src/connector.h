@@ -22,6 +22,21 @@ class Connector {
   unsigned short  rsize_;
   whatlog         what_;
 
+  // mecab-ko
+  class SpacePenalty {
+    public:
+      unsigned short posid_;
+      int penalty_cost_;
+      SpacePenalty(unsigned short posid, int penalty_cost)
+        : posid_(posid)
+        , penalty_cost_(penalty_cost)
+      {}
+  };
+  std::vector<SpacePenalty>left_space_penalty_factor_;
+
+  void set_left_space_penalty_factor(const char *factor_str);
+  int get_space_penalty_cost(const Node *rNode) const;
+
  public:
 
   bool open(const Param &param);
@@ -41,16 +56,14 @@ class Connector {
     return matrix_[rcAttr + lsize_ * lcAttr];
   }
 
-  inline int cost(const Node *lNode, const Node *rNode) const {
-    return matrix_[lNode->rcAttr + lsize_ * rNode->lcAttr] + rNode->wcost;
-  }
+  int cost(const Node *lNode, const Node *rNode) const;
 
   // access to raw matrix
   short *mutable_matrix() { return &matrix_[0]; }
   const short *matrix() const { return &matrix_[0]; }
 
   bool openText(const char *filename);
-  bool open(const char *filename, const char *mode = "r");
+  bool open(const char *filename, const char *white_space_penalty_info = "", const char *mode = "r");
 
   bool is_valid(size_t lid, size_t rid) const {
     return (lid >= 0 && lid < rsize_ && rid >= 0 && rid < lsize_);
